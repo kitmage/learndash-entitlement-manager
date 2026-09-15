@@ -5,19 +5,38 @@ defined( 'ABSPATH' ) || exit;
 
 /** LearnDash course editor UI for FluentCRM access requirements. */
 final class Course_Access_Settings {
+	const META_BOX_ID = 'aspen-lde-fluentcrm-access';
+	const COURSE_SETTINGS_TAB_ID = 'sfwd-courses-settings';
+
 	private $requirements;
 	private $fluentcrm;
 	public function __construct( Course_Requirement_Repository $requirements, FluentCRM_Adapter $fluentcrm ) { $this->requirements = $requirements; $this->fluentcrm = $fluentcrm; }
 
 	public function hooks() {
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_box' ) );
+		add_filter( 'learndash_header_tab_menu', array( $this, 'add_to_course_settings_tab' ) );
 		add_action( 'save_post', array( $this, 'save' ) );
 		add_action( 'admin_notices', array( $this, 'configuration_notice' ) );
 	}
 
 	public function add_meta_box() {
 		$post_type = function_exists( 'learndash_get_post_type_slug' ) ? learndash_get_post_type_slug( 'course' ) : 'sfwd-courses';
-		add_meta_box( 'aspen-lde-fluentcrm-access', __( 'FluentCRM Access Requirements', 'aspen-learndash-entitlements' ), array( $this, 'render' ), $post_type, 'side', 'default' );
+		add_meta_box( self::META_BOX_ID, __( 'FluentCRM Access Requirements', 'aspen-learndash-entitlements' ), array( $this, 'render' ), $post_type, 'normal', 'default' );
+	}
+
+	/** Place the meta box in LearnDash's Course Settings editor tab. */
+	public function add_to_course_settings_tab( $tabs ) {
+		if ( ! is_array( $tabs ) ) { return $tabs; }
+
+		foreach ( $tabs as $key => &$tab ) {
+			if ( ! is_array( $tab ) || ( self::COURSE_SETTINGS_TAB_ID !== $key && self::COURSE_SETTINGS_TAB_ID !== ( isset( $tab['id'] ) ? $tab['id'] : '' ) ) ) { continue; }
+			if ( ! isset( $tab['metaboxes'] ) || ! is_array( $tab['metaboxes'] ) ) { $tab['metaboxes'] = array(); }
+			if ( ! in_array( self::META_BOX_ID, $tab['metaboxes'], true ) ) { $tab['metaboxes'][] = self::META_BOX_ID; }
+			break;
+		}
+		unset( $tab );
+
+		return $tabs;
 	}
 
 	public function render( $post ) {
