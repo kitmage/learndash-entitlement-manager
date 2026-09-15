@@ -9,6 +9,7 @@ function get_post_type( $id ) { return 100 === (int) $id ? 'sfwd-courses' : 'sfw
 function learndash_get_post_type_slug() { return 'sfwd-courses'; }
 function learndash_get_course_id( $id ) { return 100; }
 function sanitize_text_field( $value ) { return (string) $value; }
+function esc_url_raw( $value ) { return filter_var( $value, FILTER_VALIDATE_URL ) ? $value : ''; }
 function add_filter() {}
 
 require_once dirname( __DIR__ ) . '/includes/class-course-requirement-repository.php';

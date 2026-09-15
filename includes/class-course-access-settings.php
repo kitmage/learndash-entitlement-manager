@@ -5,19 +5,38 @@ defined( 'ABSPATH' ) || exit;
 
 /** LearnDash course editor UI for FluentCRM access requirements. */
 final class Course_Access_Settings {
+	const META_BOX_ID = 'aspen-lde-fluentcrm-access';
+	const COURSE_SETTINGS_TAB_ID = 'sfwd-courses-settings';
+
 	private $requirements;
 	private $fluentcrm;
 	public function __construct( Course_Requirement_Repository $requirements, FluentCRM_Adapter $fluentcrm ) { $this->requirements = $requirements; $this->fluentcrm = $fluentcrm; }
 
 	public function hooks() {
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_box' ) );
+		add_filter( 'learndash_header_tab_menu', array( $this, 'add_to_course_settings_tab' ) );
 		add_action( 'save_post', array( $this, 'save' ) );
 		add_action( 'admin_notices', array( $this, 'configuration_notice' ) );
 	}
 
 	public function add_meta_box() {
 		$post_type = function_exists( 'learndash_get_post_type_slug' ) ? learndash_get_post_type_slug( 'course' ) : 'sfwd-courses';
-		add_meta_box( 'aspen-lde-fluentcrm-access', __( 'FluentCRM Access Requirements', 'aspen-learndash-entitlements' ), array( $this, 'render' ), $post_type, 'side', 'default' );
+		add_meta_box( self::META_BOX_ID, __( 'FluentCRM Access Requirements', 'aspen-learndash-entitlements' ), array( $this, 'render' ), $post_type, 'normal', 'default' );
+	}
+
+	/** Place the meta box in LearnDash's Course Settings editor tab. */
+	public function add_to_course_settings_tab( $tabs ) {
+		if ( ! is_array( $tabs ) ) { return $tabs; }
+
+		foreach ( $tabs as $key => &$tab ) {
+			if ( ! is_array( $tab ) || ( self::COURSE_SETTINGS_TAB_ID !== $key && self::COURSE_SETTINGS_TAB_ID !== ( isset( $tab['id'] ) ? $tab['id'] : '' ) ) ) { continue; }
+			if ( ! isset( $tab['metaboxes'] ) || ! is_array( $tab['metaboxes'] ) ) { $tab['metaboxes'] = array(); }
+			if ( ! in_array( self::META_BOX_ID, $tab['metaboxes'], true ) ) { $tab['metaboxes'][] = self::META_BOX_ID; }
+			break;
+		}
+		unset( $tab );
+
+		return $tabs;
 	}
 
 	public function render( $post ) {
@@ -36,6 +55,9 @@ final class Course_Access_Settings {
 		<label><input type="radio" name="aspen_lde_fluentcrm_match" value="all" <?php checked( 'all', $rule['match'] ); ?>> <?php esc_html_e( 'Require ALL selected tags', 'aspen-learndash-entitlements' ); ?></label><p class="description"><?php esc_html_e( 'The student must have every selected tag.', 'aspen-learndash-entitlements' ); ?></p>
 		<label><input type="radio" name="aspen_lde_fluentcrm_match" value="any" <?php checked( 'any', $rule['match'] ); ?>> <?php esc_html_e( 'Require ANY selected tag', 'aspen-learndash-entitlements' ); ?></label><p class="description"><?php esc_html_e( 'The student must have at least one selected tag.', 'aspen-learndash-entitlements' ); ?></p>
 		</fieldset>
+		<p><label for="aspen-lde-fluentcrm-next-url"><strong><?php esc_html_e( 'Entitlement Next URL', 'aspen-learndash-entitlements' ); ?></strong></label><br>
+		<input type="url" class="widefat" id="aspen-lde-fluentcrm-next-url" name="aspen_lde_fluentcrm_next_url" value="<?php echo esc_attr( $rule['next_url'] ); ?>" placeholder="https://example.com/training/next-step/"></p>
+		<p class="description"><?php esc_html_e( 'Where an enrolled student should continue when they no longer meet this course\'s FluentCRM access requirements.', 'aspen-learndash-entitlements' ); ?></p>
 		<?php
 	}
 
@@ -46,7 +68,8 @@ final class Course_Access_Settings {
 		if ( $post_type !== get_post_type( $post_id ) ) { return; }
 		$tags = isset( $_POST['aspen_lde_fluentcrm_tag_ids'] ) ? (array) wp_unslash( $_POST['aspen_lde_fluentcrm_tag_ids'] ) : array();
 		$match = isset( $_POST['aspen_lde_fluentcrm_match'] ) ? sanitize_key( wp_unslash( $_POST['aspen_lde_fluentcrm_match'] ) ) : 'all';
-		$this->requirements->save( $post_id, isset( $_POST['aspen_lde_fluentcrm_enabled'] ), $tags, $match );
+		$next_url = isset( $_POST['aspen_lde_fluentcrm_next_url'] ) ? wp_unslash( $_POST['aspen_lde_fluentcrm_next_url'] ) : '';
+		$this->requirements->save( $post_id, isset( $_POST['aspen_lde_fluentcrm_enabled'] ), $tags, $match, $next_url );
 	}
 
 	public function configuration_notice() {
