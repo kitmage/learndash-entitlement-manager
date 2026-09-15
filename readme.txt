@@ -36,7 +36,7 @@ Treat enrollment links as secrets: anyone possessing a usable link may authentic
 
 == Optional FluentCRM course access gate ==
 
-Course editors can use the **FluentCRM Access Requirements** box on a LearnDash course to add a read-only tag authorization requirement. Check **Require FluentCRM tags for course access**, select one or more existing FluentCRM tags, and choose a matching rule:
+Course editors can use the **FluentCRM Access Requirements** section on a LearnDash course's **Settings** tab to add a read-only tag authorization requirement. Check **Require FluentCRM tags for course access**, select one or more existing FluentCRM tags, and choose a matching rule:
 
 * **ALL** requires the learner's FluentCRM contact to possess every selected tag.
 * **ANY** requires the contact to possess at least one selected tag.
