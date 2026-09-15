@@ -15,10 +15,12 @@ final class Plugin {
 		$fluentcrm = new FluentCRM_Adapter();
 		$access_gate = new FluentCRM_Access_Gate( $requirements, $fluentcrm );
 		$access_gate->hooks();
+		$learndash = new LearnDash( $access_gate );
+		( new Course_Access_Presentation( $requirements, $access_gate, $learndash ) )->hooks();
 		( new Course_Access_Settings( $requirements, $fluentcrm ) )->hooks();
 		( new Product_Settings() )->hooks();
 		( new Order_Service( $repository ) )->hooks();
-		$redemption = new Redemption_Service( $repository, new LearnDash( $access_gate ) );
+		$redemption = new Redemption_Service( $repository, $learndash );
 		( new Enrollment_Controller( $repository, $redemption ) )->hooks();
 		( new Account_Controller( $repository ) )->hooks();
 	}

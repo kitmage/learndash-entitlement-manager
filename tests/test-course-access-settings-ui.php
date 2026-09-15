@@ -5,6 +5,7 @@ function add_action() {}
 function add_filter( $hook, $callback ) { $GLOBALS['filters'][ $hook ] = $callback; }
 function learndash_get_post_type_slug() { return 'sfwd-courses'; }
 function __( $text ) { return $text; }
+function esc_url_raw( $value ) { return filter_var( $value, FILTER_VALIDATE_URL ) ? $value : ''; }
 function add_meta_box( $id, $title, $callback, $screen, $context, $priority ) {
 	$GLOBALS['meta_box'] = compact( 'id', 'title', 'callback', 'screen', 'context', 'priority' );
 }

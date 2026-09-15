@@ -55,6 +55,9 @@ final class Course_Access_Settings {
 		<label><input type="radio" name="aspen_lde_fluentcrm_match" value="all" <?php checked( 'all', $rule['match'] ); ?>> <?php esc_html_e( 'Require ALL selected tags', 'aspen-learndash-entitlements' ); ?></label><p class="description"><?php esc_html_e( 'The student must have every selected tag.', 'aspen-learndash-entitlements' ); ?></p>
 		<label><input type="radio" name="aspen_lde_fluentcrm_match" value="any" <?php checked( 'any', $rule['match'] ); ?>> <?php esc_html_e( 'Require ANY selected tag', 'aspen-learndash-entitlements' ); ?></label><p class="description"><?php esc_html_e( 'The student must have at least one selected tag.', 'aspen-learndash-entitlements' ); ?></p>
 		</fieldset>
+		<p><label for="aspen-lde-fluentcrm-next-url"><strong><?php esc_html_e( 'Entitlement Next URL', 'aspen-learndash-entitlements' ); ?></strong></label><br>
+		<input type="url" class="widefat" id="aspen-lde-fluentcrm-next-url" name="aspen_lde_fluentcrm_next_url" value="<?php echo esc_attr( $rule['next_url'] ); ?>" placeholder="https://example.com/training/next-step/"></p>
+		<p class="description"><?php esc_html_e( 'Where an enrolled student should continue when they no longer meet this course\'s FluentCRM access requirements.', 'aspen-learndash-entitlements' ); ?></p>
 		<?php
 	}
 
@@ -65,7 +68,8 @@ final class Course_Access_Settings {
 		if ( $post_type !== get_post_type( $post_id ) ) { return; }
 		$tags = isset( $_POST['aspen_lde_fluentcrm_tag_ids'] ) ? (array) wp_unslash( $_POST['aspen_lde_fluentcrm_tag_ids'] ) : array();
 		$match = isset( $_POST['aspen_lde_fluentcrm_match'] ) ? sanitize_key( wp_unslash( $_POST['aspen_lde_fluentcrm_match'] ) ) : 'all';
-		$this->requirements->save( $post_id, isset( $_POST['aspen_lde_fluentcrm_enabled'] ), $tags, $match );
+		$next_url = isset( $_POST['aspen_lde_fluentcrm_next_url'] ) ? wp_unslash( $_POST['aspen_lde_fluentcrm_next_url'] ) : '';
+		$this->requirements->save( $post_id, isset( $_POST['aspen_lde_fluentcrm_enabled'] ), $tags, $match, $next_url );
 	}
 
 	public function configuration_notice() {
