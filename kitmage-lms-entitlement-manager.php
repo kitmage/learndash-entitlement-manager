@@ -1,0 +1,41 @@
+<?php
+/**
+ * Plugin Name: KitMage LearnDash Training Entitlement Manager
+ * Description: Sells reusable, per-order-line LearnDash enrollment entitlements through WooCommerce.
+ * Version: 1.2.0
+ * Requires at least: 6.2
+ * Requires PHP: 7.4
+ * Plugin URI: https://kitmage.com
+ * Author: Mike@KitMage
+ * Author URI: https://kitmage.com
+ * Text Domain: kitmage-learndash-entitlements
+ * License: GPL-2.0-or-later
+ * WC requires at least: 7.0
+ * WC tested up to: 10.2
+ */
+
+defined( 'ABSPATH' ) || exit;
+
+define( 'KITMAGE_LDE_VERSION', '1.2.0' );
+define( 'KITMAGE_LDE_FILE', __FILE__ );
+define( 'KITMAGE_LDE_PATH', plugin_dir_path( __FILE__ ) );
+
+require_once KITMAGE_LDE_PATH . 'includes/class-database.php';
+require_once KITMAGE_LDE_PATH . 'includes/class-repository.php';
+require_once KITMAGE_LDE_PATH . 'includes/class-product-settings.php';
+require_once KITMAGE_LDE_PATH . 'includes/class-order-service.php';
+require_once KITMAGE_LDE_PATH . 'includes/class-learndash.php';
+require_once KITMAGE_LDE_PATH . 'includes/class-course-requirement-repository.php';
+require_once KITMAGE_LDE_PATH . 'includes/class-fluentcrm-adapter.php';
+require_once KITMAGE_LDE_PATH . 'includes/class-fluentcrm-access-gate.php';
+require_once KITMAGE_LDE_PATH . 'includes/class-course-access-settings.php';
+require_once KITMAGE_LDE_PATH . 'includes/class-course-access-presentation.php';
+require_once KITMAGE_LDE_PATH . 'includes/class-redemption-service.php';
+require_once KITMAGE_LDE_PATH . 'includes/class-enrollment-controller.php';
+require_once KITMAGE_LDE_PATH . 'includes/class-account-controller.php';
+require_once KITMAGE_LDE_PATH . 'includes/class-plugin.php';
+
+register_activation_hook( __FILE__, array( 'KitMage\\LearnDashEntitlements\\Database', 'activate' ) );
+register_deactivation_hook( __FILE__, array( 'KitMage\\LearnDashEntitlements\\Plugin', 'deactivate' ) );
+
+add_action( 'plugins_loaded', array( 'KitMage\\LearnDashEntitlements\\Plugin', 'instance' ) );

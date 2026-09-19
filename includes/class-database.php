@@ -1,5 +1,5 @@
 <?php
-namespace Aspen\LearnDashEntitlements;
+namespace KitMage\LearnDashEntitlements;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -8,23 +8,23 @@ final class Database {
 
 	public static function grants_table() {
 		global $wpdb;
-		return $wpdb->prefix . 'aspen_lde_grants';
+		return $wpdb->prefix . 'kitmage_lde_grants';
 	}
 
 	public static function redemptions_table() {
 		global $wpdb;
-		return $wpdb->prefix . 'aspen_lde_redemptions';
+		return $wpdb->prefix . 'kitmage_lde_redemptions';
 	}
 
 	public static function activate() {
 		self::migrate();
 		add_rewrite_endpoint( 'training-entitlements', EP_ROOT | EP_PAGES );
-		add_rewrite_rule( '^training-enroll/([A-Za-z0-9_-]{43,})/?$', 'index.php?aspen_lde_token=$matches[1]', 'top' );
+		add_rewrite_rule( '^training-enroll/([A-Za-z0-9_-]{43,})/?$', 'index.php?kitmage_lde_token=$matches[1]', 'top' );
 		flush_rewrite_rules();
 	}
 
 	public static function migrate() {
-		if ( self::VERSION === get_option( 'aspen_lde_db_version' ) ) {
+		if ( self::VERSION === get_option( 'kitmage_lde_db_version' ) ) {
 			return;
 		}
 		global $wpdb;
@@ -66,6 +66,6 @@ final class Database {
 			UNIQUE KEY grant_user (grant_id,user_id),
 			KEY grant_id (grant_id)
 		) ENGINE=InnoDB {$charset};" );
-		update_option( 'aspen_lde_db_version', self::VERSION, false );
+		update_option( 'kitmage_lde_db_version', self::VERSION, false );
 	}
 }

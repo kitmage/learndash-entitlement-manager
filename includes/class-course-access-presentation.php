@@ -1,5 +1,5 @@
 <?php
-namespace Aspen\LearnDashEntitlements;
+namespace KitMage\LearnDashEntitlements;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -25,7 +25,7 @@ final class Course_Access_Presentation {
 		if ( ! $course_id || ! $user_id || ! $this->should_replace( $course_id, $user_id ) ) { return $button; }
 
 		$url = $this->requirements->get( $course_id )['next_url'];
-		return '<a class="btn-join button button-primary button-large wp-element-button ld--ignore-inline-css learndash-button-closed" id="btn-join" href="' . esc_url( $url ) . '">' . esc_html__( 'Next', 'aspen-learndash-entitlements' ) . '</a>';
+		return '<a class="btn-join button button-primary button-large wp-element-button ld--ignore-inline-css learndash-button-closed" id="btn-join" href="' . esc_url( $url ) . '">' . esc_html__( 'Next', 'kitmage-learndash-entitlements' ) . '</a>';
 	}
 
 	public function should_replace( $course_id, $user_id ) {

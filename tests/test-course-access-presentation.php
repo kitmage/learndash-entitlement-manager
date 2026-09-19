@@ -37,11 +37,11 @@ require_once dirname( __DIR__ ) . '/includes/class-fluentcrm-access-gate.php';
 require_once dirname( __DIR__ ) . '/includes/class-learndash.php';
 require_once dirname( __DIR__ ) . '/includes/class-course-access-presentation.php';
 
-use Aspen\LearnDashEntitlements\Course_Access_Presentation;
-use Aspen\LearnDashEntitlements\Course_Requirement_Repository;
-use Aspen\LearnDashEntitlements\FluentCRM_Access_Gate;
-use Aspen\LearnDashEntitlements\FluentCRM_Adapter;
-use Aspen\LearnDashEntitlements\LearnDash;
+use KitMage\LearnDashEntitlements\Course_Access_Presentation;
+use KitMage\LearnDashEntitlements\Course_Requirement_Repository;
+use KitMage\LearnDashEntitlements\FluentCRM_Access_Gate;
+use KitMage\LearnDashEntitlements\FluentCRM_Adapter;
+use KitMage\LearnDashEntitlements\LearnDash;
 
 final class Presentation_Fake_Tags_API {
 	public function all() { return array( (object) array( 'id' => 4, 'title' => 'Four' ), (object) array( 'id' => 17, 'title' => 'Seventeen' ) ); }
