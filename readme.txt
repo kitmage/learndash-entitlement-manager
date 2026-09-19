@@ -1,5 +1,5 @@
-=== Aspen LearnDash Training Entitlement Manager ===
-Contributors: aspen
+=== KitMage LearnDash Training Entitlement Manager ===
+Contributors: kitmage
 Tags: woocommerce, learndash, subscriptions, training
 Requires at least: 6.2
 Requires PHP: 7.4
@@ -51,7 +51,9 @@ Checks use FluentCRM's in-process `FluentCrmApi('tags')->all()`, `FluentCrmApi('
 
 == Database ==
 
-`{prefix}aspen_lde_grants` stores immutable purchase snapshots, capacity, status, token, exact UTC issue/expiry timestamps, and origin IDs. It uniquely indexes order-item ID and token. `{prefix}aspen_lde_redemptions` stores user ID, historical display name, and UTC redemption timestamp, with a unique `(grant_id,user_id)` index. Data is retained on deactivation. Schema version is stored in `aspen_lde_db_version` and upgraded with `dbDelta()`.
+`{prefix}kitmage_lde_grants` stores immutable purchase snapshots, capacity, status, token, exact UTC issue/expiry timestamps, and origin IDs. It uniquely indexes order-item ID and token. `{prefix}kitmage_lde_redemptions` stores user ID, historical display name, and UTC redemption timestamp, with a unique `(grant_id,user_id)` index. Data is retained on deactivation. Schema version is stored in `kitmage_lde_db_version` and upgraded with `dbDelta()`.
+
+Sites upgrading from the Aspen-branded plugin must follow `migration.md` before activating this release. The guide preserves existing grants, redemptions, product settings, order-line snapshots, and FluentCRM course requirements while renaming their storage keys.
 
 == Testing ==
 

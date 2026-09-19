@@ -14,9 +14,9 @@ require_once dirname( __DIR__ ) . '/includes/class-course-requirement-repository
 require_once dirname( __DIR__ ) . '/includes/class-fluentcrm-adapter.php';
 require_once dirname( __DIR__ ) . '/includes/class-course-access-settings.php';
 
-use Aspen\LearnDashEntitlements\Course_Access_Settings;
-use Aspen\LearnDashEntitlements\Course_Requirement_Repository;
-use Aspen\LearnDashEntitlements\FluentCRM_Adapter;
+use KitMage\LearnDashEntitlements\Course_Access_Settings;
+use KitMage\LearnDashEntitlements\Course_Requirement_Repository;
+use KitMage\LearnDashEntitlements\FluentCRM_Adapter;
 
 function expect_value( $label, $expected, $actual ) {
 	if ( $expected !== $actual ) { fwrite( STDERR, "FAIL: {$label}\n" ); exit( 1 ); }
@@ -36,11 +36,11 @@ $tabs = array(
 );
 $tabs = call_user_func( $filter, $tabs );
 expect_value( 'meta box is absent from the content tab', array(), $tabs[0]['metaboxes'] );
-expect_value( 'meta box is appended to the settings tab', array( 'learndash-course-access-settings', 'aspen-lde-fluentcrm-access' ), $tabs[1]['metaboxes'] );
+expect_value( 'meta box is appended to the settings tab', array( 'learndash-course-access-settings', 'kitmage-lde-fluentcrm-access' ), $tabs[1]['metaboxes'] );
 
 $tabs = call_user_func( $filter, $tabs );
-expect_value( 'tab registration is idempotent', 1, count( array_keys( $tabs[1]['metaboxes'], 'aspen-lde-fluentcrm-access', true ) ) );
+expect_value( 'tab registration is idempotent', 1, count( array_keys( $tabs[1]['metaboxes'], 'kitmage-lde-fluentcrm-access', true ) ) );
 
 $keyed_tabs = array( 'sfwd-courses-settings' => array( 'metaboxes' => array() ) );
 $keyed_tabs = call_user_func( $filter, $keyed_tabs );
-expect_value( 'keyed LearnDash tab data is supported', array( 'aspen-lde-fluentcrm-access' ), $keyed_tabs['sfwd-courses-settings']['metaboxes'] );
+expect_value( 'keyed LearnDash tab data is supported', array( 'kitmage-lde-fluentcrm-access' ), $keyed_tabs['sfwd-courses-settings']['metaboxes'] );

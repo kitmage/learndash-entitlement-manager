@@ -1,14 +1,14 @@
 <?php
-namespace Aspen\LearnDashEntitlements;
+namespace KitMage\LearnDashEntitlements;
 
 defined( 'ABSPATH' ) || exit;
 
 /** Stores and reads the optional per-course FluentCRM authorization rule. */
 class Course_Requirement_Repository {
-	const ENABLED = '_aspen_lde_fluentcrm_enabled';
-	const TAG_IDS = '_aspen_lde_fluentcrm_tag_ids';
-	const MATCH = '_aspen_lde_fluentcrm_match';
-	const NEXT_URL = '_aspen_lde_fluentcrm_next_url';
+	const ENABLED = '_kitmage_lde_fluentcrm_enabled';
+	const TAG_IDS = '_kitmage_lde_fluentcrm_tag_ids';
+	const MATCH = '_kitmage_lde_fluentcrm_match';
+	const NEXT_URL = '_kitmage_lde_fluentcrm_next_url';
 
 	private $cache = array();
 

@@ -1,5 +1,5 @@
 <?php
-namespace Aspen\LearnDashEntitlements;
+namespace KitMage\LearnDashEntitlements;
 
 defined( 'ABSPATH' ) || exit;
 

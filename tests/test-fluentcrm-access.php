@@ -16,9 +16,9 @@ require_once dirname( __DIR__ ) . '/includes/class-course-requirement-repository
 require_once dirname( __DIR__ ) . '/includes/class-fluentcrm-adapter.php';
 require_once dirname( __DIR__ ) . '/includes/class-fluentcrm-access-gate.php';
 
-use Aspen\LearnDashEntitlements\Course_Requirement_Repository;
-use Aspen\LearnDashEntitlements\FluentCRM_Adapter;
-use Aspen\LearnDashEntitlements\FluentCRM_Access_Gate;
+use KitMage\LearnDashEntitlements\Course_Requirement_Repository;
+use KitMage\LearnDashEntitlements\FluentCRM_Adapter;
+use KitMage\LearnDashEntitlements\FluentCRM_Access_Gate;
 
 final class Fake_Tags_API { public function all() { return array( (object) array( 'id' => 4, 'title' => 'Four' ), (object) array( 'id' => 17, 'title' => 'Seventeen' ), (object) array( 'id' => 29, 'title' => 'Twenty Nine' ) ); } }
 final class Fake_Contact { private $ids; public $calls = 0; public function __construct( $ids ) { $this->ids = $ids; } public function hasAnyTagId( $ids ) { $this->calls++; return (bool) array_intersect( $ids, $this->ids ); } }
