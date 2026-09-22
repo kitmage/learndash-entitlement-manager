@@ -27,7 +27,17 @@ final class Product_Settings {
 	}
 
 	private function render( $prefix = '', $values = null ) {
-		$id = $values ? $values->get_id() : get_the_ID();
+		// WooCommerce passes a WP_Post to the variation field hook. Some versions
+		// and test integrations pass a WC_Product_Variation instead, so support
+		// both shapes without calling a product method on WP_Post.
+		if ( is_object( $values ) && is_callable( array( $values, 'get_id' ) ) ) {
+			$id = $values->get_id();
+		} elseif ( is_object( $values ) && isset( $values->ID ) ) {
+			$id = $values->ID;
+		} else {
+			$id = get_the_ID();
+		}
+		$id = absint( $id );
 		woocommerce_wp_select( array( 'id' => $prefix . self::COURSE, 'name' => $prefix . self::COURSE, 'label' => __( 'LearnDash course', 'kitmage-learndash-entitlements' ), 'options' => $this->courses(), 'value' => get_post_meta( $id, self::COURSE, true ) ) );
 		woocommerce_wp_text_input( array( 'id' => $prefix . self::COUNT, 'name' => $prefix . self::COUNT, 'label' => __( 'Entitlements per unit', 'kitmage-learndash-entitlements' ), 'type' => 'number', 'custom_attributes' => array( 'min' => '0', 'step' => '1' ), 'value' => get_post_meta( $id, self::COUNT, true ) ) );
 		woocommerce_wp_text_input( array( 'id' => $prefix . self::DAYS, 'name' => $prefix . self::DAYS, 'label' => __( 'Entitlement validity days', 'kitmage-learndash-entitlements' ), 'type' => 'number', 'custom_attributes' => array( 'min' => '0', 'step' => '1' ), 'value' => get_post_meta( $id, self::DAYS, true ) ) );
