@@ -3,7 +3,7 @@ Contributors: kitmage
 Tags: woocommerce, learndash, subscriptions, training
 Requires at least: 6.2
 Requires PHP: 7.4
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 License: GPLv2 or later
 
 Sell reusable LearnDash enrollment entitlements as independent WooCommerce order-line tranches.
@@ -71,11 +71,16 @@ Run the course-editor placement and frontend Next-button harnesses with:
 
 `php tests/test-course-access-presentation.php`
 
+`php tests/test-product-settings.php`
+
 Integration acceptance tests require a WordPress test/site fixture with WooCommerce and LearnDash; renewal cases additionally require WooCommerce Subscriptions. Exercise payment retries, refund/cancellation, exact expiry boundaries, duplicate users, and two concurrent POSTs against a one-seat grant.
 
-The unit harness covers disabled rules, positive-result composition, preservation of an existing denial, single-tag checks, ANY and ALL matching, missing contacts, missing FluentCRM, empty rules, deleted tags, owning-course resolution for direct steps, request memoization, match whitelisting, and tag-ID normalization. In a staging site, additionally verify the course editor UI and direct course, lesson, topic, and quiz requests using the installed LearnDash and FluentCRM versions. Remove and restore a required tag and confirm access changes without enrollment or progress changes; repeat with an administrator learner account to confirm there is no role bypass.
+The unit harness covers disabled rules, positive-result composition, preservation of an existing denial, single-tag checks, ANY and ALL matching, missing contacts, missing FluentCRM, empty rules, deleted tags, owning-course resolution for direct steps, request memoization, match whitelisting, tag-ID normalization, and both object shapes accepted by the WooCommerce variation-field hook. In a staging site, additionally verify the course editor UI and direct course, lesson, topic, and quiz requests using the installed LearnDash and FluentCRM versions. Remove and restore a required tag and confirm access changes without enrollment or progress changes; repeat with an administrator learner account to confirm there is no role bypass.
 
 == Changelog ==
+
+= 1.2.1 =
+* Fix the WooCommerce variation editor AJAX response when loading entitlement fields.
 
 = 1.2.0 =
 * Add a per-course Next URL and a clearer closed-course CTA for enrolled learners denied by FluentCRM requirements.
