@@ -27,6 +27,13 @@ function apply_filters( $hook, $value, ...$args ) {
 	}
 	return $value;
 }
+// LearnDash resolves empty user IDs inside its native evaluator, but passes the
+// original (possibly null) argument to the filter. Redirect checks omit it.
+function sfwd_lms_has_access( $post_id, $user_id = null ) {
+	$native_user_id = empty( $user_id ) ? get_current_user_id() : absint( $user_id );
+	$native_access = $GLOBALS['native_access'] && 1 === $native_user_id;
+	return apply_filters( 'sfwd_lms_has_access', $native_access, $post_id, $user_id );
+}
 
 require_once dirname( __DIR__ ) . '/includes/class-course-requirement-repository.php';
 require_once dirname( __DIR__ ) . '/includes/class-fluentcrm-adapter.php';
@@ -69,6 +76,33 @@ expect_value( 'logged-out step requests fail the enabled tag rule', false, apply
 $GLOBALS['current_user_id'] = 1;
 $other_course = new Course_Requirement_Repository(); $other_course->save( 110, true, array( 17 ), 'all' );
 expect_value( 'shared step honors the supplied course requirement', false, apply_filters( 'learndash_can_user_read_step', true, 200, 110 ) );
+
+// The course listing supplies an explicit user; direct quiz redirects do not.
+$GLOBALS['filters'] = array(); $GLOBALS['native_access'] = true;
+$gate = gate_for( array( 4 ), array( 4 ), true, 'all', $api ); $gate->hooks();
+expect_value( 'tagged student keeps access on the course listing', true, sfwd_lms_has_access( 100, 1 ) );
+expect_value( 'direct quiz check with omitted user keeps tagged student access', true, sfwd_lms_has_access( 300 ) );
+expect_value( 'direct quiz check resolves the current student rather than a guest contact', array( 1 ), $api->user_ids );
+expect_value( 'explicit null user follows LearnDash current-user semantics', true, sfwd_lms_has_access( 300, null ) );
+expect_value( 'zero user follows LearnDash current-user semantics', true, sfwd_lms_has_access( 300, 0 ) );
+expect_value( 'empty string user follows LearnDash current-user semantics', true, sfwd_lms_has_access( 300, '' ) );
+expect_value( 'direct lesson check with omitted user keeps tagged student access', true, sfwd_lms_has_access( 200 ) );
+expect_value( 'direct topic check with omitted user keeps tagged student access', true, sfwd_lms_has_access( 400 ) );
+expect_value( 'explicit different student cannot borrow the current student tags', false, apply_filters( 'sfwd_lms_has_access', true, 300, 2 ) );
+$GLOBALS['native_access'] = false;
+expect_value( 'omitted-user quiz check still preserves native enrollment or progression denial', false, sfwd_lms_has_access( 300 ) );
+$GLOBALS['native_access'] = true; $GLOBALS['filters'] = array();
+$gate = gate_for( array( 4 ), array(), true, 'all', $api ); $gate->hooks();
+expect_value( 'omitted-user quiz check denies a student missing required tags', false, sfwd_lms_has_access( 300 ) );
+expect_value( 'missing-tag check still queries the current student contact', array( 1 ), $api->user_ids );
+$GLOBALS['current_user_id'] = 0; $GLOBALS['filters'] = array();
+$gate = gate_for( array( 4 ), array( 4 ), true, 'all', $api ); $gate->hooks();
+expect_value( 'omitted-user check cannot give anonymous visitors the student tags', false, apply_filters( 'sfwd_lms_has_access', true, 300, null ) );
+expect_value( 'anonymous visitor resolves to the guest contact', array( 0 ), $api->user_ids );
+$GLOBALS['current_user_id'] = 2;
+expect_value( 'omitted-user checks do not reuse a previous student decision', false, apply_filters( 'sfwd_lms_has_access', true, 300, null ) );
+expect_value( 'changed current student gets a separate CRM lookup', array( 0, 2 ), $api->user_ids );
+$GLOBALS['current_user_id'] = 1;
 
 
 $api = null;

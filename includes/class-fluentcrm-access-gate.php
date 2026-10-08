@@ -19,6 +19,9 @@ class FluentCRM_Access_Gate {
 
 	public function filter_course_access( $has_access, $post_id, $user_id ) {
 		if ( ! $has_access || $this->suspended || $this->is_backend_admin() ) { return $has_access; }
+		// LearnDash resolves empty IDs inside its native evaluator, but passes
+		// the original argument to this filter (null on direct-step redirects).
+		$user_id = empty( $user_id ) ? get_current_user_id() : absint( $user_id );
 		$course_id = $this->course_id( $post_id );
 		return $course_id ? $this->meets_requirement( $user_id, $course_id ) : $has_access;
 	}
