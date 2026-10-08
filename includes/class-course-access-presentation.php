@@ -29,6 +29,7 @@ final class Course_Access_Presentation {
 	}
 
 	public function should_replace( $course_id, $user_id ) {
+		if ( $this->access_gate->is_backend_admin() ) { return false; }
 		$rule = $this->requirements->get( $course_id );
 		if ( ! $rule['enabled'] || ! $rule['next_url'] ) { return false; }
 		if ( ! $this->learndash->has_access( $user_id, $course_id ) ) { return false; }

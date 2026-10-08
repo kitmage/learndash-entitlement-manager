@@ -6,6 +6,10 @@ $GLOBALS['filters'] = array();
 $GLOBALS['underlying_access'] = false;
 $GLOBALS['current_user_id'] = 7;
 $GLOBALS['current_course_id'] = 100;
+$GLOBALS['admin_request'] = false;
+$GLOBALS['manage_options'] = false;
+function is_admin() { return $GLOBALS['admin_request']; }
+function current_user_can( $capability ) { return 'manage_options' === $capability && $GLOBALS['manage_options']; }
 
 function absint( $value ) { return abs( (int) $value ); }
 function get_post_meta( $id, $key ) { return isset( $GLOBALS['meta'][ $id ][ $key ] ) ? $GLOBALS['meta'][ $id ][ $key ] : ''; }
@@ -100,3 +104,10 @@ expect_value( 'non-scalar Next URL is rejected on save', '', $legacy_repository-
 $GLOBALS['translated_next'] = 'Next & forward';
 $escaped_label = presentation_for( true, array( 4 ), array(), 'all', $url )->filter_closed_button( $original, array( 'course_id' => 100 ) );
 expect_value( 'translated button label is escaped', true, false !== strpos( $escaped_label, '>Next &amp; forward</a>' ) );
+
+$GLOBALS['admin_request'] = true; $GLOBALS['manage_options'] = true;
+$presentation = presentation_for( true, array( 4 ), array(), 'all', $url );
+expect_value( 'backend administrator retains native LearnDash button', $original, $presentation->filter_closed_button( $original, array( 'course_id' => 100 ) ) );
+expect_value( 'backend administrator has no replacement CTA', false, $presentation->should_replace( 100, 7 ) );
+$GLOBALS['admin_request'] = false;
+expect_value( 'frontend administrator is still subject to tags', true, $presentation->should_replace( 100, 7 ) );
