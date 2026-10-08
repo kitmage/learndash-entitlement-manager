@@ -22,6 +22,7 @@ final class Plugin {
 		( new Order_Service( $repository ) )->hooks();
 		$redemption = new Redemption_Service( $repository, $learndash );
 		( new Enrollment_Controller( $repository, $redemption ) )->hooks();
+		( new Enrollment_Settings() )->hooks();
 		( new Account_Controller( $repository ) )->hooks();
 	}
 	private function dependencies_ready() { return class_exists( 'WooCommerce' ) && function_exists( 'ld_update_course_access' ) && function_exists( 'sfwd_lms_has_access' ); }

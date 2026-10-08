@@ -34,7 +34,7 @@ function wp_enqueue_script( $handle, $url, $deps, $version, $footer ) { $GLOBALS
 function get_the_title() { return 'Example course'; }
 function home_url( $path ) { return 'https://example.test/' . ltrim( $path, '/' ); }
 function user_trailingslashit( $path ) { return $path . '/'; }
-function get_option() { return 'Y-m-d'; }
+function get_option( $key, $default = false ) { return 'kitmage_lde_enrollment_page_id' === $key ? 0 : 'Y-m-d'; }
 function wp_date( $format, $time ) { return gmdate( $format, $time ); }
 function wc_format_datetime() { return '2026-01-01'; }
 

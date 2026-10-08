@@ -2,7 +2,7 @@
 /**
  * Plugin Name: KitMage LearnDash Training Entitlement Manager
  * Description: Sells reusable, per-order-line LearnDash enrollment entitlements through WooCommerce.
- * Version: 1.3.0
+ * Version: 1.4.0
  * Requires at least: 6.2
  * Requires PHP: 7.4
  * Plugin URI: https://kitmage.com
@@ -16,7 +16,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'KITMAGE_LDE_VERSION', '1.3.0' );
+define( 'KITMAGE_LDE_VERSION', '1.4.0' );
 define( 'KITMAGE_LDE_FILE', __FILE__ );
 define( 'KITMAGE_LDE_PATH', plugin_dir_path( __FILE__ ) );
 
@@ -32,6 +32,7 @@ require_once KITMAGE_LDE_PATH . 'includes/class-course-access-settings.php';
 require_once KITMAGE_LDE_PATH . 'includes/class-course-access-presentation.php';
 require_once KITMAGE_LDE_PATH . 'includes/class-redemption-service.php';
 require_once KITMAGE_LDE_PATH . 'includes/class-enrollment-controller.php';
+require_once KITMAGE_LDE_PATH . 'includes/class-enrollment-settings.php';
 require_once KITMAGE_LDE_PATH . 'includes/class-account-controller.php';
 require_once KITMAGE_LDE_PATH . 'includes/class-plugin.php';
 
