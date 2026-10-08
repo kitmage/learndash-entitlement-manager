@@ -14,22 +14,26 @@ class FluentCRM_Access_Gate {
 
 	public function hooks() {
 		add_filter( 'sfwd_lms_has_access', array( $this, 'filter_course_access' ), 20, 3 );
-		add_filter( 'learndash_can_user_read_step', array( $this, 'filter_step_access' ), 20, 4 );
+		add_filter( 'learndash_can_user_read_step', array( $this, 'filter_step_access' ), 20, 3 );
 	}
 
 	public function filter_course_access( $has_access, $post_id, $user_id ) {
-		if ( ! $has_access || $this->suspended ) { return $has_access; }
+		if ( ! $has_access || $this->suspended || $this->is_backend_admin() ) { return $has_access; }
 		$course_id = $this->course_id( $post_id );
 		return $course_id ? $this->meets_requirement( $user_id, $course_id ) : $has_access;
 	}
 
-	public function filter_step_access( $can_read, $user_id, $step_id, $course_id = 0 ) {
-		if ( ! $can_read || $this->suspended ) { return $can_read; }
+	public function filter_step_access( $can_read, $step_id, $course_id = 0 ) {
+		if ( ! $can_read || $this->suspended || $this->is_backend_admin() ) { return $can_read; }
+		// LearnDash supplies step and course IDs, not a user ID, on this hook.
+		$user_id = get_current_user_id();
 		$course_id = absint( $course_id ) ?: $this->course_id( $step_id );
 		return $course_id ? $this->meets_requirement( $user_id, $course_id ) : $can_read;
 	}
 
 	public function meets_requirement( $user_id, $course_id ) {
+		// Do not cache the bypass as a learner decision or query CRM in admin tools.
+		if ( $this->is_backend_admin() ) { return true; }
 		$key = absint( $user_id ) . ':' . absint( $course_id );
 		if ( array_key_exists( $key, $this->decisions ) ) { return $this->decisions[ $key ]; }
 		$rule = $this->requirements->get( $course_id );
@@ -39,6 +43,12 @@ class FluentCRM_Access_Gate {
 		$known_ids = array_keys( $this->fluentcrm->tags() );
 		if ( array_diff( $rule['tag_ids'], $known_ids ) ) { return $this->decisions[ $key ] = false; }
 		return $this->decisions[ $key ] = $this->fluentcrm->contact_matches( $this->fluentcrm->contact( $user_id ), $rule['tag_ids'], $rule['match'] );
+	}
+
+	public function is_backend_admin() {
+		// is_admin() includes admin-ajax; REST editors may run outside wp-admin.
+		$backend = is_admin() || ( defined( 'REST_REQUEST' ) && REST_REQUEST );
+		return $backend && current_user_can( 'manage_options' );
 	}
 
 	public function without_gate( $callback ) {

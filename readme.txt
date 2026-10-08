@@ -3,7 +3,7 @@ Contributors: kitmage
 Tags: woocommerce, learndash, subscriptions, training
 Requires at least: 6.2
 Requires PHP: 7.4
-Stable tag: 1.4.0
+Stable tag: 1.4.1
 License: GPLv2 or later
 
 Sell reusable LearnDash enrollment entitlements as independent WooCommerce order-line tranches.
@@ -66,6 +66,10 @@ This gate only restricts an access result that LearnDash already allowed. Passin
 
 An enabled rule fails closed when no tags are configured, a selected tag has since been deleted, the WordPress user has no FluentCRM contact, or FluentCRM/the required API is unavailable. Missing saved tags remain visible in the editor. Administrators have no learner-facing bypass and must meet the same tags.
 
+Administrative requests made by a user with `manage_options` bypass the CRM gate in wp-admin (including admin-AJAX) and REST requests, preserving LearnDash's original access result and Course Builder visibility. This bypass uses the acting administrator, even when admin tools inspect another learner's access, and never turns a LearnDash denial into permission. Normal frontend pages still enforce tags for administrators. Students remain gated in frontend, AJAX, and REST requests. The backend bypass also leaves LearnDash's course button unchanged.
+
+The `learndash_can_user_read_step` hook supplies `(can_read, step_post_id, course_id)`. The plugin checks the current WordPress user's CRM contact and the supplied course's rule; if no course context is supplied, it resolves the step's owning course. Matching tags preserve LearnDash's existing lesson, topic, and quiz access, while native restrictions such as enrollment, progression, and scheduling remain in force.
+
 Checks use FluentCRM's in-process `FluentCrmApi('tags')->all()`, `FluentCrmApi('contacts')->getContactByUserRef()`, and contact `hasAnyTagId()` APIs. Results are memoized only for the current PHP request, so adding or removing a tag changes access on the next request. The integration never creates contacts or tags and never enrolls, unenrolls, or modifies LearnDash progress, completions, quizzes, or certificates. Restoring a tag restores access to the learner's unchanged course state.
 
 == Database ==
@@ -84,6 +88,8 @@ Run the dependency-free FluentCRM authorization unit harness with:
 
 `php tests/test-fluentcrm-access.php`
 
+`php tests/test-fluentcrm-access.php --rest`
+
 Run the course-editor placement and frontend Next-button harnesses with:
 
 `php tests/test-course-access-settings-ui.php`
@@ -100,9 +106,13 @@ Run the course-editor placement and frontend Next-button harnesses with:
 
 Integration acceptance tests require a WordPress test/site fixture with WooCommerce and LearnDash; renewal cases additionally require WooCommerce Subscriptions. Exercise payment retries, refund/cancellation, exact expiry boundaries, duplicate users, and two concurrent POSTs against a one-seat grant.
 
-The unit harness covers disabled rules, positive-result composition, preservation of an existing denial, single-tag checks, ANY and ALL matching, missing contacts, missing FluentCRM, empty rules, deleted tags, owning-course resolution for direct steps, request memoization, match whitelisting, tag-ID normalization, and both object shapes accepted by the WooCommerce variation-field hook. In a staging site, additionally verify the course editor UI and direct course, lesson, topic, and quiz requests using the installed LearnDash and FluentCRM versions. Remove and restore a required tag and confirm access changes without enrollment or progress changes; repeat with an administrator learner account to confirm there is no role bypass.
+The unit harness covers disabled rules, positive-result composition, preservation of an existing denial, single-tag checks, ANY and ALL matching, missing contacts, missing FluentCRM, empty rules, deleted tags, LearnDash's actual three-argument course-step hook, current-student identity, shared-course context, owning-course resolution for direct steps, request memoization, administrator backend/REST bypass, student AJAX/REST enforcement, match whitelisting, tag-ID normalization, and both object shapes accepted by the WooCommerce variation-field hook. In a staging site, additionally verify the Course Builder, course editor UI, and direct course, lesson, topic, and quiz requests using the installed LearnDash and FluentCRM versions. Remove and restore a required tag and confirm access changes without enrollment or progress changes; repeat with an administrator learner account on the frontend to confirm tags are still required, and verify backend editing without a FluentCRM contact or tags.
 
 == Changelog ==
+
+= 1.4.1 =
+* Fix lesson, topic, and quiz access by honoring LearnDash's actual step-hook arguments and checking the current student's CRM contact.
+* Preserve native administrator access and Course Builder visibility in backend/AJAX/REST requests, without changing student tag enforcement or native LearnDash denials.
 
 = 1.4.0 =
 * Add a [training-enrollment] shortcode and Settings > Training Enrollment page selection for normal WordPress and Elementor layouts.
