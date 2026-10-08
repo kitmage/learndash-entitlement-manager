@@ -3,7 +3,7 @@ Contributors: kitmage
 Tags: woocommerce, learndash, subscriptions, training
 Requires at least: 6.2
 Requires PHP: 7.4
-Stable tag: 1.2.1
+Stable tag: 1.3.0
 License: GPLv2 or later
 
 Sell reusable LearnDash enrollment entitlements as independent WooCommerce order-line tranches.
@@ -27,6 +27,12 @@ A paid processing/completed order creates one uniquely-tokenized grant per quali
 When an originating order is cancelled or fully refunded, its active grants are marked revoked. Existing redemptions and LearnDash access are never removed.
 
 Purchasers find orders and grant details under My Account > Training Entitlements. Usable bearer links are hidden when expired, exhausted, or revoked. Redeemer name snapshots remain visible.
+
+Entitlement purchases display a What's next card on the order confirmation and account order-details screens, linking directly to that order's training entitlements. Classic checkout displays the card above the confirmation details; block-based confirmations display it through the Additional Information block. Keep that block in customized confirmation templates. The card distinguishes awaiting payment, paid-but-not-yet-issued, ready, and unavailable entitlements. Regular orders are unaffected. The account Orders list also includes a Manage training entitlements action, and the dashboard shows the total remaining usable entitlements across owned, paid orders. Account URLs follow WooCommerce's configured My Account page.
+
+The entitlement details screen explains how attendees claim enrollments and provides a Copy enrollment link button with clipboard fallback and manual-copy guidance. Without JavaScript the read-only link can still be selected and copied. Email content is unchanged; email follow-ups can be managed separately in FluentCRM.
+
+Purchases must be linked to a customer account for self-service entitlement management. Guest confirmations provide contact guidance instead of an inaccessible management button; this release does not automatically claim or reassign guest orders. Signed-out purchasers of account-linked orders can see the confirmation guidance using their valid order key, but must sign in with the purchasing account to access enrollment links.
 
 == Redemption flow ==
 
@@ -73,11 +79,20 @@ Run the course-editor placement and frontend Next-button harnesses with:
 
 `php tests/test-product-settings.php`
 
+`php tests/test-account-navigation.php`
+
+`node --test tests/test-account-copy.js`
+
 Integration acceptance tests require a WordPress test/site fixture with WooCommerce and LearnDash; renewal cases additionally require WooCommerce Subscriptions. Exercise payment retries, refund/cancellation, exact expiry boundaries, duplicate users, and two concurrent POSTs against a one-seat grant.
 
 The unit harness covers disabled rules, positive-result composition, preservation of an existing denial, single-tag checks, ANY and ALL matching, missing contacts, missing FluentCRM, empty rules, deleted tags, owning-course resolution for direct steps, request memoization, match whitelisting, tag-ID normalization, and both object shapes accepted by the WooCommerce variation-field hook. In a staging site, additionally verify the course editor UI and direct course, lesson, topic, and quiz requests using the installed LearnDash and FluentCRM versions. Remove and restore a required tag and confirm access changes without enrollment or progress changes; repeat with an administrator learner account to confirm there is no role bypass.
 
 == Changelog ==
+
+= 1.3.0 =
+* Add order confirmation guidance, direct links from account orders, and an available-entitlement reminder on the account dashboard.
+* Explain attendee enrollment and add accessible enrollment-link copying with clipboard and manual fallbacks.
+* Show payment-aware empty states and retain account ownership checks on order-specific entitlement screens.
 
 = 1.2.1 =
 * Fix the WooCommerce variation editor AJAX response when loading entitlement fields.
