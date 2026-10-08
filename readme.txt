@@ -3,7 +3,7 @@ Contributors: kitmage
 Tags: woocommerce, learndash, subscriptions, training
 Requires at least: 6.2
 Requires PHP: 7.4
-Stable tag: 1.3.0
+Stable tag: 1.4.0
 License: GPLv2 or later
 
 Sell reusable LearnDash enrollment entitlements as independent WooCommerce order-line tranches.
@@ -39,6 +39,19 @@ Purchases must be linked to a customer account for self-service entitlement mana
 The attendee visits `/training-enroll/{token}/`. Logged-out attendees use the normal account/login flow and return to the link. GET only renders a challenge. A nonce-protected POST locks the grant row in an InnoDB transaction, revalidates it, reserves one unique user redemption, calls `ld_update_course_access()`, verifies access, and commits. Failure rolls back the database reservation. Existing LearnDash access is not charged.
 
 Treat enrollment links as secrets: anyone possessing a usable link may authenticate and claim one entitlement.
+
+== Elementor and shortcode enrollment page ==
+
+1. Create and publish a regular WordPress page, such as `/training-enrollment/`.
+2. Add `[training-enrollment]` in an Elementor **Shortcode** widget or a WordPress Shortcode block. Choose your normal Elementor page layout and Theme Builder conditions, and style the page like any other page.
+3. Open **Settings > Training Enrollment**, select that page, and save.
+4. Exclude the page from full-page/CDN caching and purge any existing cached copy. The plugin sends no-cache and no-referrer headers and marks enrollment pages noindex; caches that serve a response before WordPress runs must also exclude the page. Keep the shortcode widget's output dynamic if using additional Elementor caching tools.
+
+Enrollment links now point to the selected page with a `kitmage_lde_token` query parameter. Previously shared `/training-enroll/{token}/` links redirect to the page, and in-flight legacy forms preserve their POST data through a 307 redirect. The public enrollment rewrite endpoint is retained. If no page is selected, or the selected page becomes unpublished, deleted, or password protected, the built-in enrollment screen remains available.
+
+The shortcode returns a component inside the normal WordPress page loop; it never loads a header/footer or exits the request. Elementor controls the surrounding layout and template parts. It includes the course-specific heading, sign-in/create-account action, confirmation form, or an enrollment status message. An editor preview or a visit without a token displays neutral instructions. Invalid, expired, exhausted, revoked, and unsuccessful confirmation requests display feedback inside the selected page. Login and registration return the attendee to their enrollment link.
+
+Style `.kitmage-lde-enrollment`, `.kitmage-lde-enrollment-title`, `.kitmage-lde-enrollment-message`, `.kitmage-lde-enrollment-description`, `.kitmage-lde-enrollment-form`, `.kitmage-lde-confirm`, `.kitmage-lde-not-now`, and `.kitmage-lde-sign-in` through Elementor custom CSS or your theme. The shortcode applies no inline width, margin, or padding. Page visits, previews, and shortcode rendering never redeem an entitlement; only the nonce-protected confirmation POST invokes the existing transactional redemption service.
 
 == Optional FluentCRM course access gate ==
 
@@ -81,6 +94,8 @@ Run the course-editor placement and frontend Next-button harnesses with:
 
 `php tests/test-account-navigation.php`
 
+`php tests/test-enrollment-shortcode.php`
+
 `node --test tests/test-account-copy.js`
 
 Integration acceptance tests require a WordPress test/site fixture with WooCommerce and LearnDash; renewal cases additionally require WooCommerce Subscriptions. Exercise payment retries, refund/cancellation, exact expiry boundaries, duplicate users, and two concurrent POSTs against a one-seat grant.
@@ -88,6 +103,11 @@ Integration acceptance tests require a WordPress test/site fixture with WooComme
 The unit harness covers disabled rules, positive-result composition, preservation of an existing denial, single-tag checks, ANY and ALL matching, missing contacts, missing FluentCRM, empty rules, deleted tags, owning-course resolution for direct steps, request memoization, match whitelisting, tag-ID normalization, and both object shapes accepted by the WooCommerce variation-field hook. In a staging site, additionally verify the course editor UI and direct course, lesson, topic, and quiz requests using the installed LearnDash and FluentCRM versions. Remove and restore a required tag and confirm access changes without enrollment or progress changes; repeat with an administrator learner account to confirm there is no role bypass.
 
 == Changelog ==
+
+= 1.4.0 =
+* Add a [training-enrollment] shortcode and Settings > Training Enrollment page selection for normal WordPress and Elementor layouts.
+* Preserve existing enrollment links and forms while displaying confirmation and error states inside the selected page.
+* Return attendees to enrollment after sign-in or registration and prevent enrollment response caching and indexing.
 
 = 1.3.0 =
 * Add order confirmation guidance, direct links from account orders, and an available-entitlement reminder on the account dashboard.
