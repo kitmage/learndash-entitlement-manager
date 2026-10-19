@@ -67,7 +67,7 @@ final class Account_Controller {
 		}
 		foreach ( $grants as $grant ) {
 			if ( 'active' === Repository::state( $grant ) ) {
-				return array( __( 'Your training entitlements are ready', 'kitmage-learndash-entitlements' ), __( 'Find your enrollment links, share them with attendees, and track who has enrolled.', 'kitmage-learndash-entitlements' ) );
+				return array( __( 'Don\'t forget to send your trainee invitations!', 'kitmage-learndash-entitlements' ), __( 'Find your enrollment links, share them with attendees, and track who has enrolled.', 'kitmage-learndash-entitlements' ) );
 			}
 		}
 		if ( $grants ) {
